@@ -14,21 +14,7 @@ let s:Search = s:V.import('Coaster.Search')
 let g:operator#flashy#group = get(g:, 'operator#flashy#group', 'Flashy')
 let g:operator#flashy#flash_time = get(g:, 'operator#flashy#flash_time', 100)
 
-function! s:init_hl() abort
-  highlight default Flashy term=bold ctermbg=0 guibg=#13354A
-  if hlexists('Cursor')
-    highlight default link FlashyCursor Cursor
-  else
-    highlight default FlashyCursor term=reverse cterm=reverse gui=reverse
-  endif
-endfunction
-
-call s:init_hl()
-
-augroup plugin-flashy-highlight
-  autocmd!
-  autocmd ColorScheme * call s:init_hl()
-augroup END
+highlight default Flashy term=reverse cterm=reverse gui=reverse
 
 " operator#flashy#do() yanks text with flash in normal mode.
 " It assumes not to provide mappings for visual mode.
@@ -84,7 +70,6 @@ endfunction
 
 function! s:flash(pattern, time) abort
   try
-    call s:highlight_cursor()
     call s:highlight_yanked_region(a:pattern)
     redraw
     call s:sleep(a:time)
@@ -99,15 +84,6 @@ function! s:sleep(ms) abort
   endwhile
 endfunction
 
-function! s:highlight_cursor() abort
-  " Do not highlight cursor if the character under cursor is Tab character
-  " because it has more than one width and the cursor highlight will be
-  " ugly.
-  if s:get_cursor_char() isnot# "\t"
-    call s:Highlight.highlight('FlashyCursor', 'FlashyCursor', '\%#', 11)
-  endif
-endfunction
-
 function! s:get_cursor_char() abort
   return getline('.')[col('.')-1]
 endfunction
@@ -117,7 +93,7 @@ function! s:highlight_yanked_region(pattern) abort
 endfunction
 
 function! s:clear() abort
-  call s:Highlight.clear('FlashyCursor')
+  call s:Highlight.clear('Flashy')
   call s:Highlight.clear('YankRegion')
 endfunction
 
